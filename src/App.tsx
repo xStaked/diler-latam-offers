@@ -7,6 +7,7 @@ function App() {
   return (
     <>
       <Routes>
+        <Route path="/" element={<h1>Hellow world</h1>} />
         <Route path="/order/:orderId" element={<OrderDetail />} />
       </Routes>
     </>
