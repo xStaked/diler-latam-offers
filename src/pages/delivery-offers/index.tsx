@@ -59,9 +59,8 @@ export default function OrderDetail() {
   const [counterOfferPrice, setCounterOfferPrice] = useState("");
   const [showCounterOffer, setShowCounterOffer] = useState(false);
   const [order, setOrder] = useState<Order | null>(null);
-  const path = window.location.pathname;
-  const parts = path.split("/");
-  const orderId = parts[1];
+  const { orderId } = useParams(); // ¡Funciona igual que en v5/v6!
+
   const pollingIntervalRef = useRef<number | null>(null);
 
   const token =
