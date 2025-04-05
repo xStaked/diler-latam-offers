@@ -61,7 +61,7 @@ export default function OrderDetail() {
   const [order, setOrder] = useState<Order | null>(null);
   const path = window.location.pathname;
   const parts = path.split("/");
-  const orderId = parts[2];
+  const orderId = parts[1];
   const pollingIntervalRef = useRef<number | null>(null);
 
   const token =
