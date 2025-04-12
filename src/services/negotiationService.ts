@@ -47,7 +47,7 @@ export const getNegotiationByOrderId = async (
   orderId: string,
   token: string
 ) => {
-  const response = await fetch(`${API_URL}/negotiation/order/${orderId}`, {
+  const response = await fetch(`${API_URL}/negotiation/order-negotiation/${orderId}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },

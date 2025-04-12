@@ -86,7 +86,7 @@ export default function OrderDetail() {
     if (!orderId) return;
 
     try {
-      const orderResponse = await fetch(`${API_URL}/order/${orderId}`, {
+      const orderResponse = await fetch(`${API_URL}/negotiation/by-order/${orderId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
