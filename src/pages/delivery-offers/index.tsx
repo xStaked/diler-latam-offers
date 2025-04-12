@@ -60,15 +60,12 @@ export default function OrderDetail() {
   const [counterOfferPrice, setCounterOfferPrice] = useState("");
   const [showCounterOffer, setShowCounterOffer] = useState(false);
   const [order, setOrder] = useState<Order | null>(null);
-  const { orderId } = useParams(); // ¡Funciona igual que en v5/v6!
+  const { orderId, token } = useParams(); // ¡Funciona igual que en v5/v6!
 
   const pollingIntervalRef = useRef<number | null>(null);
 
-  const token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImpvaG5kb2VAZ21haWwuY29tIiwicm9sZSI6WyJkZWxpdmVyeSJdLCJpZCI6IjY3ZTc2M2U2YTFiMDZiZDUyNTlkMTYyZiIsImlhdCI6MTc0MzgyNzg5OSwiZXhwIjoxNzQ2NDE5ODk5fQ.R1VeXox_JnNXtclALwMMm134pErRXXuctg7CQw4NQ2g";
-
   const fetchNegotiationData = async () => {
-    if (!orderId) return;
+    if (!orderId || !token) return;
 
     try {
       const negotiationData = await getNegotiationByOrderId(

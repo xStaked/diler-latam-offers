@@ -11,4 +11,12 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  server: {
+    // Configuración para manejar URLs con puntos
+    strictPort: true,
+    hmr: {
+      protocol: "ws",
+      host: "localhost",
+    },
+  },
 });

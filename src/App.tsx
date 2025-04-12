@@ -6,7 +6,7 @@ function App() {
     <HashRouter>
       <Routes>
         <Route path="/" element={<h1>Hello World</h1>} />
-        <Route path="/order/:orderId" element={<OrderDetail />} />
+        <Route path="/order/:orderId/:token" element={<OrderDetail />} />
       </Routes>
     </HashRouter>
   );
