@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { ArrowLeft, Check, X } from "lucide-react";
+import { Check, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,6 +16,7 @@ import {
 } from "@/services/negotiationService";
 import { useParams } from "react-router-dom";
 import { API_URL } from "@/constants";
+import DilerLogo from "@/assets/diler-logo.webp";
 
 interface Offer {
   id: string;
@@ -86,11 +87,14 @@ export default function OrderDetail() {
     if (!orderId) return;
 
     try {
-      const orderResponse = await fetch(`${API_URL}/negotiation/by-order/${orderId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const orderResponse = await fetch(
+        `${API_URL}/negotiation/by-order/${orderId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (!orderResponse.ok) throw new Error("Error al cargar la orden");
       const orderData = await orderResponse.json();
@@ -252,7 +256,7 @@ export default function OrderDetail() {
         return (
           <Badge
             variant="outline"
-            className="bg-green-100 text-green-800 border-green-200"
+            className="bg-[#E8F4D4] text-[#A4D150] border-[#A4D150]/30"
           >
             Aceptado
           </Badge>
@@ -284,24 +288,33 @@ export default function OrderDetail() {
     )[0];
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <header className="sticky top-0 z-10 border-b bg-background px-4 py-3">
-        <div className="flex items-center">
-          <Button variant="ghost" size="icon">
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-          <h1 className="text-xl font-semibold">Detalles del Pedido</h1>
+    <div className="flex min-h-screen w-screen flex-col">
+      <header className="sticky top-0 z-10 border-b bg-white px-4 py-3 shadow-sm">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <h1 className="text-xl font-semibold">Detalles del Pedido</h1>
+          </div>
+          <div className="h-25 w-25">
+            <img
+              src={DilerLogo || "/placeholder.svg"}
+              alt="Diler Logo"
+              className="h-full w-full object-contain"
+              loading="lazy"
+            />
+          </div>
         </div>
       </header>
 
-      <main className="flex-1 p-4 md:p-6">
+      <main className="flex-1 p-4 md:p-6 bg-gray-50">
         <div className="mx-auto max-w-6xl space-y-6">
           <div className="flex flex-col md:flex-row gap-6">
             {/* Order details card */}
-            <Card className="flex-1">
-              <CardHeader>
+            <Card className="flex-1 border-none shadow-md">
+              <CardHeader className="border-b border-gray-100">
                 <div className="flex items-center justify-between">
-                  <CardTitle>Pedido #{orderId}</CardTitle>
+                  <CardTitle className="text-[#A4D150]">
+                    Pedido #{orderId}
+                  </CardTitle>
                   {getStatusBadge(order?.status as string)}
                 </div>
                 <CardDescription>
@@ -341,9 +354,11 @@ export default function OrderDetail() {
             </Card>
 
             {/* Negotiation card */}
-            <Card className="flex-1">
-              <CardHeader>
-                <CardTitle>Negociación con Repartidor</CardTitle>
+            <Card className="flex-1 border-none shadow-md">
+              <CardHeader className="border-b border-gray-100">
+                <CardTitle className="text-[#A4D150]">
+                  Negociación con Repartidor
+                </CardTitle>
                 <CardDescription>
                   Negocia el precio de entrega con tu repartidor
                 </CardDescription>
@@ -366,7 +381,7 @@ export default function OrderDetail() {
 
                       <div className="grid grid-cols-2 gap-3">
                         <Button
-                          className="bg-green-600 hover:bg-green-700 text-white flex items-center justify-center gap-2"
+                          className="bg-[#A4D150] hover:bg-[#94BD48] text-white flex items-center justify-center gap-2"
                           onClick={acceptOffer}
                         >
                           <Check className="h-4 w-4" />
@@ -401,22 +416,27 @@ export default function OrderDetail() {
                           onChange={(e) => setCounterOfferPrice(e.target.value)}
                         />
                       </div>
-                      <Button onClick={sendCounterOffer}>Enviar</Button>
+                      <Button
+                        onClick={sendCounterOffer}
+                        className="bg-[#A4D150] hover:bg-[#94BD48]"
+                      >
+                        Enviar
+                      </Button>
                     </div>
                   </div>
                 )}
 
                 {/* Mostrar precio acordado si la negociación fue aceptada */}
                 {negotiation.status === "accepted" && (
-                  <div className="border rounded-md p-4 bg-green-50 border-green-200">
+                  <div className="border rounded-md p-4 bg-[#E8F4D4] border-[#A4D150]/30">
                     <div className="text-center">
-                      <p className="text-sm text-green-700 mb-1">
+                      <p className="text-sm text-[#6A8633] mb-1">
                         Precio Acordado
                       </p>
-                      <p className="text-3xl font-bold text-green-800">
+                      <p className="text-3xl font-bold text-[#A4D150]">
                         €{negotiation.currentPrice.toFixed(2)}
                       </p>
-                      <p className="text-sm text-green-700 mt-2">
+                      <p className="text-sm text-[#6A8633] mt-2">
                         ¡Genial! Has acordado un precio con tu repartidor.
                       </p>
                     </div>
@@ -446,7 +466,7 @@ export default function OrderDetail() {
                           className={
                             negotiation.status === "accepted" &&
                             negotiation.currentPrice === offer.price
-                              ? "bg-green-100 text-green-800 border-green-200"
+                              ? "bg-[#E8F4D4] text-[#A4D150] border-[#A4D150]/30"
                               : "bg-amber-100 text-amber-800 border-amber-200"
                           }
                         >
