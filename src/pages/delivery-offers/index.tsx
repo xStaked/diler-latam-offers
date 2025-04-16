@@ -17,6 +17,8 @@ import {
 import { useParams } from "react-router-dom";
 import { API_URL } from "@/constants";
 import DilerLogo from "@/assets/diler-logo.webp";
+import DeliveryTimeline from "@/components/ui/DeliveryTimeline";
+
 
 interface Offer {
   id: string;
@@ -92,10 +94,12 @@ export default function OrderDetail() {
           },
         }
       );
-
       if (!orderResponse.ok) throw new Error("Error al cargar la orden");
       const orderData = await orderResponse.json();
       setOrder(orderData);
+      console.log(orderData);
+      console.log("Polling activo:", Boolean(pollingIntervalRef.current));
+
       return orderData;
     } catch (err) {
       console.log("Error al cargar la orden:", err);
@@ -105,35 +109,32 @@ export default function OrderDetail() {
   };
 
   const startPolling = () => {
-    // Generate a random interval between 15-20 seconds (15000-20000 ms)
-    const getRandomInterval = () => Math.floor(Math.random() * 5000) + 15000;
+    console.log("Polling activo:", Boolean(pollingIntervalRef.current));
+
+    console.log("Dentro")
+    const getRandomInterval = () => Math.floor(Math.random() * 5000);
 
     // Clear any existing interval
     if (pollingIntervalRef.current) {
       window.clearInterval(pollingIntervalRef.current);
     }
 
-    // Set new interval
     pollingIntervalRef.current = window.setInterval(async () => {
-      // Only fetch negotiation if it's not in a final state
-      if (negotiation && negotiation.status !== "accepted") {
-        console.log("Polling for negotiation updates...");
-        const updatedNegotiation = await fetchNegotiationData();
-
-        // If negotiation is now accepted, we can stop polling
-        if (updatedNegotiation && updatedNegotiation.status === "accepted") {
-          console.log("Negotiation accepted, stopping polling");
-          if (pollingIntervalRef.current) {
-            window.clearInterval(pollingIntervalRef.current);
-            pollingIntervalRef.current = null;
-          }
-        }
-      } else if (!negotiation) {
-        // If no negotiation exists yet, try to fetch it
-        await fetchNegotiationData();
-      } else if (negotiation.status === "accepted") {
-        // If negotiation is already accepted, stop polling
-        console.log("Negotiation already accepted, stopping polling");
+      console.log("Polling for updates...");
+    
+      // Actualiza orden
+      const orderData = await fetchOrderData();
+      console.log("Estado actual de la orden:", orderData?.status);
+    
+      // Actualiza negociación
+      const updatedNegotiation = await fetchNegotiationData();
+    
+      // Verifica condiciones para detener polling
+      const isNegotiationAccepted = updatedNegotiation?.status === "accepted";
+      const isOrderDelivered = orderData?.status === "delivered";
+    
+      if (isNegotiationAccepted && isOrderDelivered) {
+        console.log("Negociación aceptada y orden entregada, deteniendo polling");
         if (pollingIntervalRef.current) {
           window.clearInterval(pollingIntervalRef.current);
           pollingIntervalRef.current = null;
@@ -150,10 +151,9 @@ export default function OrderDetail() {
         setLoading(true);
         await fetchOrderData();
         const negotiationData = await fetchNegotiationData();
-
-        // Only start polling if negotiation exists and isn't accepted
-        if (negotiationData && negotiationData.status !== "accepted") {
+        if (negotiationData && negotiationData.status !== "delivered") {
           startPolling();
+          console.log("1");
         }
       } catch (err) {
         console.log(err);
@@ -240,6 +240,15 @@ export default function OrderDetail() {
 
   const getStatusBadge = (status: string) => {
     switch (status) {
+      case "created":
+        return (
+          <Badge
+            variant="outline"
+            className="bg-gray-100 text-gray-800 border-gray-200"
+          >
+            Creado
+          </Badge>
+        );
       case "pending":
         return (
           <Badge
@@ -249,29 +258,93 @@ export default function OrderDetail() {
             Pendiente
           </Badge>
         );
-      case "accepted":
-        return (
-          <Badge
-            variant="outline"
-            className="bg-[#E8F4D4] text-[#A4D150] border-[#A4D150]/30"
-          >
-            Aceptado
-          </Badge>
-        );
-      case "counter-offered":
-      case "counter_offered":
+      case "confirmed":
         return (
           <Badge
             variant="outline"
             className="bg-blue-100 text-blue-800 border-blue-200"
           >
-            Contraoferta
+            Confirmado
           </Badge>
         );
+      case "delivered":
+        return (
+          <Badge
+            variant="outline"
+            className="bg-green-100 text-green-800 border-green-200"
+          >
+            Entregado
+          </Badge>
+        );
+  
+      case "assigned":
+        return (
+          <Badge
+            variant="outline"
+            className="bg-sky-100 text-sky-800 border-sky-200"
+          >
+            Asignado
+          </Badge>
+        );
+      case "heading_to_store":
+        return (
+          <Badge
+            variant="outline"
+            className="bg-yellow-100 text-yellow-800 border-yellow-200"
+          >
+            En ruta al negocio
+          </Badge>
+        );
+      case "arrived_at_store":
+        return (
+          <Badge
+            variant="outline"
+            className="bg-orange-100 text-orange-800 border-orange-200"
+          >
+            Llegó al negocio
+          </Badge>
+        );
+      case "heading_to_customer":
+        return (
+          <Badge
+            variant="outline"
+            className="bg-indigo-100 text-indigo-800 border-indigo-200"
+          >
+            En ruta al cliente
+          </Badge>
+        );
+      case "arrived_at_customer":
+        return (
+          <Badge
+            variant="outline"
+            className="bg-purple-100 text-purple-800 border-purple-200"
+          >
+            Llegó al destino
+          </Badge>
+        );
+      case "completed":
+        return (
+          <Badge
+            variant="outline"
+            className="bg-green-100 text-green-800 border-green-200"
+          >
+            Entregado
+          </Badge>
+        );
+  
+      // Fallback
       default:
-        return <Badge variant="outline">Desconocido</Badge>;
+        return (
+          <Badge
+            variant="outline"
+            className="bg-neutral-100 text-neutral-800 border-neutral-200"
+          >
+            Desconocido
+          </Badge>
+        );
     }
   };
+  
 
   if (loading) return <div>Cargando...</div>;
   if (error) return <div>{error}</div>;
@@ -286,10 +359,10 @@ export default function OrderDetail() {
 
   return (
     <div className="flex min-h-screen w-screen flex-col">
-      <header className="sticky top-0 z-10 border-b bg-white px-4 py-3 shadow-sm">
+      <header className="sticky top-0 z-10 border-b bg-white px-4 shadow-sm">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-semibold">Detalles del Pedido</h1>
+            <h2 className="text-2xl font-semibold">Detalles del Pedido</h2>
           </div>
           <div className="h-25 w-25">
             <img
@@ -304,13 +377,13 @@ export default function OrderDetail() {
 
       <main className="flex-1 p-4 md:p-6 bg-gray-50">
         <div className="mx-auto max-w-6xl space-y-6">
-          <div className="flex flex-col md:flex-row gap-6">
-            {/* Order details card */}
+        <div className="flex flex-col lg:flex-row gap-6">
+        {/* Order details card */}
             <Card className="flex-1 border-none shadow-md">
               <CardHeader className="border-b border-gray-100">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-[#A4D150]">
-                    Pedido #{orderId}
+                    Pedido #{order?._id}
                   </CardTitle>
                   {getStatusBadge(order?.status as string)}
                 </div>
@@ -347,10 +420,12 @@ export default function OrderDetail() {
                   </h3>
                   {getStatusBadge(order?.deliveryStatus || "unknown")}
                 </div>
+
+                <DeliveryTimeline currentStatus={order?.deliveryStatus || "assigned"} />
+
               </CardContent>
             </Card>
 
-            {/* Negotiation card */}
             <Card className="flex-1 border-none shadow-md">
               <CardHeader className="border-b border-gray-100">
                 <CardTitle className="text-[#A4D150]">
@@ -378,7 +453,7 @@ export default function OrderDetail() {
 
                       <div className="grid grid-cols-2 gap-3">
                         <Button
-                          className="bg-[#A4D150] hover:bg-[#94BD48] text-white flex items-center justify-center gap-2"
+                          className="bg-[#A4D150] hover:bg-[#94BD48] dark:text-white text-black flex items-center justify-center gap-2"
                           onClick={acceptOffer}
                         >
                           <Check className="h-4 w-4" />
@@ -415,7 +490,7 @@ export default function OrderDetail() {
                       </div>
                       <Button
                         onClick={sendCounterOffer}
-                        className="bg-[#A4D150] hover:bg-[#94BD48]"
+                        className="bg-[#A4D150] hover:bg-[#94BD48] dark:text-white text-black"
                       >
                         Enviar
                       </Button>
