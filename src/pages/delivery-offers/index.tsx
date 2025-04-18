@@ -447,13 +447,13 @@ export default function OrderDetail() {
                           Oferta del Repartidor
                         </p>
                         <p className="text-3xl font-bold">
-                          €{lastDeliveryOffer.price.toFixed(2)}
+                          {lastDeliveryOffer.price.toFixed(2)}
                         </p>
                       </div>
 
                       <div className="grid grid-cols-2 gap-3">
                         <Button
-                          className="bg-[#A4D150] hover:bg-[#94BD48] dark:text-white text-black flex items-center justify-center gap-2"
+                          className="bg-[#A4D150] hover:bg-[#94BD48] text-white flex items-center justify-center gap-2"
                           onClick={acceptOffer}
                         >
                           <Check className="h-4 w-4" />
@@ -477,7 +477,7 @@ export default function OrderDetail() {
                     <h3 className="font-medium">Hacer Contraoferta</h3>
                     <div className="flex gap-2">
                       <div className="relative flex-1">
-                        <span className="absolute left-3 top-2.5">€</span>
+                        <span className="absolute left-3 top-2.5"></span>
                         <Input
                           type="number"
                           step="0.50"
@@ -490,7 +490,7 @@ export default function OrderDetail() {
                       </div>
                       <Button
                         onClick={sendCounterOffer}
-                        className="bg-[#A4D150] hover:bg-[#94BD48] dark:text-white text-black"
+                        className="bg-[#A4D150] hover:bg-[#94BD48] text-white"
                       >
                         Enviar
                       </Button>
@@ -506,7 +506,7 @@ export default function OrderDetail() {
                         Precio Acordado
                       </p>
                       <p className="text-3xl font-bold text-[#A4D150]">
-                        €{negotiation.currentPrice.toFixed(2)}
+                        {negotiation.currentPrice.toFixed(2)}
                       </p>
                       <p className="text-sm text-[#6A8633] mt-2">
                         ¡Genial! Has acordado un precio con tu repartidor.
@@ -531,7 +531,7 @@ export default function OrderDetail() {
                               : "Tú"}
                             :
                           </span>{" "}
-                          €{offer.price.toFixed(2)}
+                          {offer.price.toFixed(2)}
                         </div>
                         <Badge
                           variant="outline"
