@@ -135,13 +135,8 @@ export default function ResetPasswordPage() {
 
       const response = await resetPassword(token, formState.newPassword);
 
-      if (response.success) {
+      if (response) {
         setIsSuccess(true);
-      } else {
-        setServerError(
-          response.message ||
-            "Error al cambiar la contraseña. Inténtalo de nuevo."
-        );
       }
     } catch (error) {
       setServerError(
@@ -192,17 +187,8 @@ export default function ResetPasswordPage() {
                 ¡Contraseña actualizada con éxito!
               </h3>
               <p className="text-gray-600">
-                Tu contraseña ha sido restablecida correctamente. Serás
-                redirigido a la página de inicio de sesión en {countdown}{" "}
-                segundos.
+                Tu contraseña ha sido restablecida correctamente
               </p>
-              <Button
-                variant="outline"
-                className="mt-2"
-                onClick={handleBackToLogin}
-              >
-                Ir al inicio de sesión ahora
-              </Button>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
