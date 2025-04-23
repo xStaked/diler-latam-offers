@@ -8,7 +8,7 @@ function App() {
       <Routes>
         <Route path="/" element={<h1>Hello World</h1>} />
         <Route path="/order/:orderId/:token" element={<OrderDetail />} />
-        <Route path="/reset-password" element={<ResetPasswordPage />} />
+        <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
       </Routes>
     </HashRouter>
   );
